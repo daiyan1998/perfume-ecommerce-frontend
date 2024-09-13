@@ -6,12 +6,16 @@ import {
   CardContent,
   CardMedia,
   Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
 import Link from "next/link";
+import SkeletonCard from "../ui/SkeletonCard";
 
 const ProductCard = ({ product, isLoading }) => {
   const { name, priceRange, image, _id, priceByMl } = product;
+
+  if (isLoading) return <SkeletonCard />;
 
   return (
     <Card>
@@ -30,54 +34,24 @@ const ProductCard = ({ product, isLoading }) => {
         }}
       >
         <Link href={`/product/${_id}`}>
-          {isLoading ? (
-            <Skeleton
-              sx={{ height: 250 }}
-              animation="wave"
-              variant="rectangular"
-            />
-          ) : (
-            <CardMedia
-              sx={{
-                height: 250,
-              }}
-              image={image}
-            />
-          )}
+          <CardMedia
+            sx={{
+              height: 250,
+            }}
+            image={image}
+          />
         </Link>
       </Box>
       <CardContent sx={{ textAlign: "center" }}>
-        {isLoading ? (
-          <Skeleton animation="wave" />
-        ) : (
-          <Typography color="secondary.">{name}</Typography>
-        )}
-        {isLoading ? (
-          <Skeleton animation="wave" sx={{ fontSize: 20, fontWeight: "700" }} />
-        ) : (
-          <Typography fontSize={20} sx={{ fontWeight: "700" }} gutterBottom>
-            ৳{priceByMl[0].price} - ৳{priceByMl[priceByMl.length - 1].price}
-          </Typography>
-        )}
-        {isLoading ? (
-          <Skeleton sx={{ height: "3.5rem" }} />
-        ) : (
-          <Link href={`/product/${_id}`}>
-            <Button
-              variant="contained"
-              // color="secondary"
-              fullWidth
-              // sx={{
-              //   ":hover": {
-              //     bgcolor: "black",
-              //     color: "white",
-              //   },
-              // }}
-            >
-              View More
-            </Button>
-          </Link>
-        )}
+        <Typography color="secondary.">{name}</Typography>
+        <Typography fontSize={20} sx={{ fontWeight: "700" }} gutterBottom>
+          ৳{priceByMl[0].price} - ৳{priceByMl[priceByMl.length - 1].price}
+        </Typography>
+        <Link href={`/product/${_id}`}>
+          <Button variant="contained" fullWidth>
+            View More
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );

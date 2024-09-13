@@ -29,6 +29,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -51,13 +52,11 @@ const ProfileScreen = () => {
     error,
   } = useGetMyOrdersQuery();
 
-  console.log(orders);
   useEffect(() => {
     if (!userInfo) {
       return redirect("/");
     }
   }, [userInfo]);
-  console.log(userInfo);
   const submitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -87,10 +86,22 @@ const ProfileScreen = () => {
   if (!userInfo) {
     return null;
   }
+
+  if (loadingMyOrders) return <Loading />;
+  if (error)
+    return (
+      <Alert severity="error">{error?.data?.message || error?.error}</Alert>
+    );
+
   return (
     <Container>
       <Grid container spacing={2}>
-        <Grid item xs={3}>
+        <Grid
+          item
+          md={3}
+          xs={12}
+          sx={{ display: { xs: "flex", md: "block" }, flexDirection: "column" }}
+        >
           <Stack
             direction="row"
             alignItems="center"
@@ -122,7 +133,7 @@ const ProfileScreen = () => {
             </Button>
           </FormControl>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item md={9} xs={12}>
           <Stack
             direction="row"
             alignItems="center"
@@ -134,13 +145,7 @@ const ProfileScreen = () => {
               Your Orders
             </Typography>
           </Stack>
-          {loadingMyOrders ? (
-            <Loading />
-          ) : error ? (
-            <Alert severity="error">
-              {error?.data?.message || error?.error}
-            </Alert>
-          ) : (
+          {orders?.length > 0 ? (
             <TableContainer>
               <Table>
                 <TableHead>
@@ -160,7 +165,7 @@ const ProfileScreen = () => {
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell>{order._id}</TableCell>
-                      <TableCell>{order.createdAt}</TableCell>
+                      <TableCell>{order.createdAt.substring(0, 10)}</TableCell>
                       <TableCell>৳{order.totalPrice}</TableCell>
                       <TableCell>
                         {order.paidAt ? (
@@ -171,7 +176,7 @@ const ProfileScreen = () => {
                       </TableCell>
                       <TableCell>
                         {order.deliveredAt ? (
-                          order.deliveredAt
+                          order.deliveredAt.substring(0, 10)
                         ) : (
                           <ReportGmailerrorred color="error" />
                         )}
@@ -190,6 +195,11 @@ const ProfileScreen = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+          ) : (
+            <Stack justifyContent="center" alignItems="center">
+              <Image src="/no-data.jpg" height={300} width={300} />
+              <Typography variant="h5">No Orders</Typography>
+            </Stack>
           )}
         </Grid>
       </Grid>

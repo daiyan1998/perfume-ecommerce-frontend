@@ -11,6 +11,7 @@ import {
   Button,
   Container,
   IconButton,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -27,7 +28,11 @@ import toast from "react-hot-toast";
 
 const ProductListScreen = () => {
   // redux calls
-  const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+  const { data, isLoading, error, refetch } = useGetProductsQuery({
+    pageNumber: 1,
+  });
+
+  const products = data?.products;
   const [createProduct, { isLoading: loadingCreateProduct }] =
     useCreateProductMutation();
 
@@ -59,8 +64,15 @@ const ProductListScreen = () => {
   };
   return (
     <Container sx={{ mt: 10 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="h2">Products</Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography sx={{ typography: { md: "h3", xs: "h4" } }}>
+          Products
+        </Typography>
         <div>
           <Button
             variant="outlined"
@@ -76,49 +88,53 @@ const ProductListScreen = () => {
       ) : error ? (
         <Alert severity="error">{error.message}</Alert>
       ) : (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Id</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Price Range</TableCell>
-                <TableCell>Brand</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow key={product._id}>
-                  <TableCell>{product._id}</TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>
-                    ৳{product.priceByMl[0]?.price} - ৳
-                    {product.priceByMl[product.priceByMl.length - 1]?.price}{" "}
-                  </TableCell>
-                  <TableCell>Will add</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>
-                    <Tooltip title="Edit">
-                      <Link href={`/product/${product._id}/edit`}>
-                        <IconButton>
-                          <EditNote />
-                        </IconButton>
-                      </Link>
-                    </Tooltip>
-
-                    <Tooltip title="Delete">
-                      <IconButton onClick={() => deleteHandler(product._id)}>
-                        <Delete color="error" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
+        <Paper variant="outlined">
+          <TableContainer sx={{ maxHeight: 540 }}>
+            <Table stickyHeader={true}>
+              <TableHead
+                sx={{ backgroundColor: "#F3F5F9", fontWeight: "bold" }}
+              >
+                <TableRow>
+                  <TableCell>Id</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Price Range</TableCell>
+                  <TableCell>Brand</TableCell>
+                  <TableCell>Category</TableCell>
+                  <TableCell>Action</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow key={product._id}>
+                    <TableCell>{product._id}</TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>
+                      ৳{product.priceByMl[0]?.price} - ৳
+                      {product.priceByMl[product.priceByMl.length - 1]?.price}{" "}
+                    </TableCell>
+                    <TableCell>Will add</TableCell>
+                    <TableCell>{product.category}</TableCell>
+                    <TableCell>
+                      <Tooltip title="Edit">
+                        <Link href={`/product/${product._id}/edit`}>
+                          <IconButton>
+                            <EditNote />
+                          </IconButton>
+                        </Link>
+                      </Tooltip>
+
+                      <Tooltip title="Delete">
+                        <IconButton onClick={() => deleteHandler(product._id)}>
+                          <Delete color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       )}
     </Container>
   );

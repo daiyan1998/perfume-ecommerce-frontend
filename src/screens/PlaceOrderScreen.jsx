@@ -6,7 +6,7 @@ import SimpleCheckoutSteps from "@/components/SimpleCheckoutSteps";
 import { clearCartItems } from "@/slices/cartSlice";
 import { useCreateOrderMutation } from "@/slices/ordersApiSlice";
 import { Button, Grid } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +16,8 @@ const PlaceOrderScreen = () => {
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+  const { userInfo } = useSelector((state) => state.auth);
+  const pathName = usePathname();
 
   useEffect(() => {
     if (!cart.shippingAddress.address) {
@@ -26,6 +28,7 @@ const PlaceOrderScreen = () => {
   }, [cart.paymentMethod, cart.shippingAddress?.address, router]);
 
   const placeOrderHandler = async () => {
+    if (!userInfo) router.push(`/login?redirect=${pathName}`);
     try {
       const res = await createOrder({
         orderItems: cart.cartItems,

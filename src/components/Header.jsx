@@ -112,8 +112,8 @@ export default function Header() {
     try {
       avatarClose();
       await logoutApiCall().unwrap();
-      dispatch(logout());
       router.push("/login");
+      dispatch(logout());
     } catch (error) {
       console.error(error);
     }

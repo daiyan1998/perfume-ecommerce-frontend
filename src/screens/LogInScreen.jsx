@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import { useLoginMutation } from "@/slices/userApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "@/slices/authSlice";
-import { redirect } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 
 function Copyright(props) {
   return (
@@ -42,11 +42,14 @@ const defaultTheme = createTheme();
 export default function LogInScreen() {
   const [signin, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
+  const router = useRouter();
+  const redirect = router.query || "/";
+  const searchParams = useSearchParams();
 
   const { userInfo } = useSelector((state) => state.auth);
 
   React.useEffect(() => {
-    if (userInfo) return redirect("/");
+    if (userInfo) return router.push(searchParams.get("redirect") || "/");
   }, [userInfo]);
 
   const handleSubmit = async (event) => {

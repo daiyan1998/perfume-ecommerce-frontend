@@ -59,7 +59,6 @@ export default function SignUpScreen() {
         password: data.get("password"),
       };
       const res = await signup(formData).unwrap();
-      console.log(res);
       toast.success(res.message);
       dispatch(setCredentials(res.user));
       router.push("/");

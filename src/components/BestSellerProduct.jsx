@@ -1,5 +1,5 @@
 "use client";
-import { CssBaseline, Grid, Typography } from "@mui/material";
+import { Alert, CssBaseline, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -43,8 +43,8 @@ const BestSeller = () => {
   const [value, setValue] = useState(0);
 
   // @desc  Fetch Products
-  const { data: products, isLoading, error } = useGetProductsQuery();
-
+  const { data, isLoading, error } = useGetProductsQuery({ pageNumber: 1 });
+  const products = data?.products;
   // @desc  Tabs value change
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -71,14 +71,14 @@ const BestSeller = () => {
         {isLoading ? (
           <Loading />
         ) : error ? (
-          <h1>{error.message}</h1>
+          <Alert severity="error">{error.message}</Alert>
         ) : (
           <>
             <CustomTabPanel value={value} index={0}>
               {products.map((product, i) => (
                 <Grid item xs={3} key={i}>
                   {/*desc ProductCard component */}
-                  <ProductCard product={product} />
+                  <ProductCard product={product} isLoading={isLoading} />
                 </Grid>
               ))}
             </CustomTabPanel>

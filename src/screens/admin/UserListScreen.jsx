@@ -5,11 +5,18 @@ import {
   useGetUsersQuery,
   useUpdateUserMutation,
 } from "@/slices/userApiSlice";
+import {
+  FirstPage,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage,
+  ReportGmailerrorred,
+  Visibility,
+} from "@mui/icons-material";
 import { Check, Delete, EditNote, NoAccounts } from "@mui/icons-material";
 import {
   Alert,
   Button,
-  Box,
   Container,
   IconButton,
   Stack,
@@ -25,11 +32,77 @@ import {
   TextField,
   Checkbox,
   FormControlLabel,
-  CircularProgress,
+  Box,
+  TableFooter,
+  TablePagination,
+  useTheme,
+  Paper,
 } from "@mui/material";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
+const TablePaginationActions = (props) => {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPage /> : <FirstPage />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPage /> : <LastPage />}
+      </IconButton>
+    </Box>
+  );
+};
 
 const UserListScreen = () => {
   // redux calls
@@ -51,53 +124,113 @@ const UserListScreen = () => {
     }
   };
 
+  // table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setrowsPerPage] = useState(5);
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setrowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <Container sx={{ mt: 10 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="h2">Users</Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h3">Users</Typography>
       </Stack>
       {isLoading ? (
         <Loading />
       ) : error ? (
         <Alert severity="error">{error?.data?.message}</Alert>
       ) : (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Id</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Admin</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user._id}>
-                  <TableCell>{user._id}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    {user.isAdmin ? (
-                      <Check color="success" />
-                    ) : (
-                      <NoAccounts color="error" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <UserEditModal user={user} refetch={refetch} />
-                    <Tooltip title="Delete">
-                      <IconButton onClick={() => deleteHandler(user._id)}>
-                        <Delete color="error" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
+        <Paper variant="outlined">
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Id</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Admin</TableCell>
+                  <TableCell>Action</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {(rowsPerPage > 0
+                  ? users.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
+                  : users
+                ).map((user) => (
+                  <TableRow key={user._id}>
+                    <TableCell>{user._id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      {user.isAdmin ? (
+                        <Check color="success" />
+                      ) : (
+                        <NoAccounts color="error" />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <UserEditModal user={user} refetch={refetch} />
+                      <Tooltip title="Delete">
+                        <IconButton onClick={() => deleteHandler(user._id)}>
+                          <Delete color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan={users.length}
+                    count={users.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    slotProps={{
+                      select: {
+                        inputProps: {
+                          "aria-label": "rows per page",
+                        },
+                        native: true,
+                      },
+                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                  />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        </Paper>
       )}
     </Container>
   );

@@ -26,7 +26,6 @@ export default function CartDrawer() {
   });
 
   const { cartItems, itemsPrice } = useSelector((state) => state.cart);
-  console.log("cartdrawer", cartItems, itemsPrice);
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -55,17 +54,17 @@ export default function CartDrawer() {
         <Stack p={1} direction="row" justifyContent="space-between">
           <Stack direction="row" alignItems="center" gap={1}>
             <LocalMallOutlined />
-            <Typography>{cartItems.length} Item</Typography>
+            <Typography>{cartItems?.length} Item</Typography>
           </Stack>
           <IconButton onClick={toggleDrawer(anchor, false)}>
             <CloseOutlined />
           </IconButton>
         </Stack>
         <Divider />
-        {cartItems.length > 0 ? (
+        {cartItems?.length > 0 ? (
           <Box display="flex" flexDirection="column">
             {/* CartItem Component for items inside cart view */}
-            {cartItems.map((item, i) => (
+            {cartItems?.map((item, i) => (
               <div key={`${item._id}${i}`}>
                 <CartItem item={item} />
                 <Divider />
@@ -92,7 +91,7 @@ export default function CartDrawer() {
           </Box>
         )}
       </Box>
-      {cartItems.length > 0 && (
+      {cartItems?.length > 0 && (
         <Box p={2}>
           <Divider />
           <Stack p={2} direction="row" justifyContent="space-between">
@@ -127,7 +126,7 @@ export default function CartDrawer() {
         variant="contained"
       >
         <Badge
-          badgeContent={cartItems.length > 0 ? cartItems.length : 0}
+          badgeContent={cartItems?.length > 0 ? cartItems.length : 0}
           color="error"
         >
           <ShoppingCartOutlined />

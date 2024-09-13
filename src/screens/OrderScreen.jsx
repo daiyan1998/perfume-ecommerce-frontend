@@ -23,7 +23,7 @@ import {
   Typography,
 } from "@mui/material";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -31,7 +31,6 @@ import { useSelector } from "react-redux";
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
-
   const {
     data: order,
     refetch,
@@ -55,6 +54,7 @@ const OrderScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    if (!userInfo) redirect("/login");
     if (!errorPaypal && !loadingPaypal && paypal.clientId) {
       const loadPaypalScript = async () => {
         paypalDispatch({
@@ -72,7 +72,7 @@ const OrderScreen = () => {
         }
       }
     }
-  }, [order, paypal, paypalDispatch, loadingPaypal, errorPaypal]);
+  }, [userInfo, order, paypal, paypalDispatch, loadingPaypal, errorPaypal]);
 
   const onApprove = (data, actions) => {
     return actions.order.capture().then(async (details) => {
@@ -143,7 +143,7 @@ const OrderScreen = () => {
                     <Typography component="span" variant="h6">
                       Name :{" "}
                     </Typography>
-                    {order.user.name}
+                    {order.user?.name}
                   </Typography>
                 </ListItem>
                 <ListItem>
@@ -151,7 +151,7 @@ const OrderScreen = () => {
                     <Typography component="span" variant="h6">
                       Email :{" "}
                     </Typography>
-                    {order.user.email}
+                    {order.user?.email}
                   </Typography>
                 </ListItem>
                 <ListItem>

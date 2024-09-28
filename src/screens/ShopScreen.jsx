@@ -54,7 +54,6 @@ const ShopScreen = () => {
   const [pageNumber, setPageNumber] = React.useState(1);
   const { data, isLoading, error } = useGetProductsQuery({ pageNumber });
   const { products, pages } = data || {};
-  console.log(pages);
   const PriceRangeSlider = () => {
     const [value, setValue] = useState([0, 10]);
 

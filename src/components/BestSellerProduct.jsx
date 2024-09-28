@@ -76,7 +76,7 @@ const BestSeller = () => {
           <>
             <CustomTabPanel value={value} index={0}>
               {products.map((product, i) => (
-                <Grid item xs={3} key={i}>
+                <Grid item xs={12} sm={6} md={3} key={i}>
                   {/*desc ProductCard component */}
                   <ProductCard product={product} isLoading={isLoading} />
                 </Grid>

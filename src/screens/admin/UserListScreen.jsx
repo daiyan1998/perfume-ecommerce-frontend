@@ -140,7 +140,7 @@ const UserListScreen = () => {
   };
 
   return (
-    <Container sx={{ mt: 10 }}>
+    <Container>
       <Stack
         direction="row"
         justifyContent="space-between"

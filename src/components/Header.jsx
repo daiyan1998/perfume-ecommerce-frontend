@@ -273,26 +273,11 @@ export default function Header() {
                         startIcon={<AdminPanelSettings />}
                         endIcon={<ArrowDropDown />}
                         onClick={adminClick}
+                        component={Link}
+                        href="/admin/userlist"
                       >
                         Admin
                       </Button>
-                      <Menu
-                        id="admin-menu"
-                        anchorEl={adminEl}
-                        open={isAdminOpen}
-                        onClose={adminClose}
-                        onClick={adminClose}
-                      >
-                        <Link href="/admin/orderlist">
-                          <MenuItem>Orders</MenuItem>
-                        </Link>
-                        <Link href="/admin/productlist">
-                          <MenuItem>Products</MenuItem>
-                        </Link>
-                        <Link href="/admin/userlist">
-                          <MenuItem>Users</MenuItem>
-                        </Link>
-                      </Menu>
                     </>
                   )}
                 </>

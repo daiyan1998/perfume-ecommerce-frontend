@@ -10,10 +10,10 @@
     "deploy": "cd.. && npm install --save-dev && npm install --prefix frontend && npm run build --prefix frontend && npm run start --prefix frontend"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.14.12",
-    "@mui/material": "^5.14.12",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
     "@paypal/react-paypal-js": "^8.5.0",
     "@reduxjs/toolkit": "^1.9.7",
     "axios": "^1.5.1",

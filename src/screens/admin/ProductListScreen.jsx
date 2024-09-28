@@ -5,34 +5,113 @@ import {
   useDeleteProductMutation,
   useGetProductsQuery,
 } from "@/slices/productsApiSlice";
-import { Delete, EditNote, Visibility } from "@mui/icons-material";
+import { useTheme } from "@emotion/react";
+import {
+  Delete,
+  EditNote,
+  FirstPage,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage,
+  Visibility,
+} from "@mui/icons-material";
 import {
   Alert,
+  Box,
   Button,
   Container,
   IconButton,
+  Pagination,
   Paper,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
+  TablePagination,
   TableRow,
   Tooltip,
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const ProductListScreen = () => {
-  // redux calls
-  const { data, isLoading, error, refetch } = useGetProductsQuery({
-    pageNumber: 1,
-  });
+const TablePaginationActions = (props) => {
+  const theme = useTheme();
+  const { count, page, pages, rowsPerPage, onPageChange } = props;
 
-  const products = data?.products;
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPage /> : <FirstPage />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={pages === page}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPage /> : <LastPage />}
+      </IconButton>
+    </Box>
+  );
+};
+
+const ProductListScreen = () => {
+  const router = useRouter();
+  const [pageNumber, setPageNumber] = React.useState(1);
+  const { data, isLoading, error, refetch } = useGetProductsQuery({
+    pageNumber,
+  });
+  const { products, pages, count } = data || {};
+
+  const [page, setPage] = useState(0);
+
   const [createProduct, { isLoading: loadingCreateProduct }] =
     useCreateProductMutation();
 
@@ -62,8 +141,25 @@ const ProductListScreen = () => {
       }
     }
   };
+
+  // table
+  const [rowsPerPage, setrowsPerPage] = useState(5);
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - count) : 0;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+    setPageNumber(newPage + 1);
+    router.push(`productlist?page=${newPage + 1}`);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setrowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   return (
-    <Container sx={{ mt: 10 }}>
+    <Container>
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -112,7 +208,7 @@ const ProductListScreen = () => {
                       ৳{product.priceByMl[0]?.price} - ৳
                       {product.priceByMl[product.priceByMl.length - 1]?.price}{" "}
                     </TableCell>
-                    <TableCell>Will add</TableCell>
+                    <TableCell>{product.brand}</TableCell>
                     <TableCell>{product.category}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit">
@@ -131,7 +227,40 @@ const ProductListScreen = () => {
                     </TableCell>
                   </TableRow>
                 ))}
+                {/* {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )} */}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan={count}
+                    count={count}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    slotProps={{
+                      select: {
+                        inputProps: {
+                          "aria-label": "rows per page",
+                        },
+                        native: true,
+                      },
+                    }}
+                    pages={pages}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                  />
+                </TableRow>
+              </TableFooter>
             </Table>
           </TableContainer>
         </Paper>

@@ -93,7 +93,6 @@ const TablePaginationActions = (props) => {
 };
 const OrderListScreen = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
-  console.log(orders);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setrowsPerPage] = useState(5);
 
@@ -109,7 +108,7 @@ const OrderListScreen = () => {
   };
 
   return (
-    <Container sx={{ mt: 10 }}>
+    <Container>
       <Typography sx={{ typography: { xs: "h4", md: "h3" }, mb: 2 }}>
         Orders
       </Typography>

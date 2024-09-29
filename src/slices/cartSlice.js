@@ -1,9 +1,19 @@
 import { updateCart } from "@/utils/cartUtils";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = localStorage.getItem("cart")
-  ? JSON.parse(localStorage.getItem("cart"))
-  : { cartItems: [] };
+const getCartFromLocalStorage = () => {
+  if (typeof window === "undefined") {
+    return { cartItems: [] };
+  }
+  const cart = localStorage.getItem("cart");
+  if (cart) {
+    return JSON.parse(cart);
+  } else {
+    return { cartItems: [] };
+  }
+};
+
+const initialState = getCartFromLocalStorage();
 const cartSlice = createSlice({
   name: "cart",
   initialState,

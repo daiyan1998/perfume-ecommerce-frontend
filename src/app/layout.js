@@ -23,8 +23,8 @@ const roboto = Roboto({
 export default function RootLayout({ children }) {
   return (
     <React.StrictMode>
-      <html lang="en">
-        <body className={roboto.className} suppressHydrationWarning={true}>
+      <html lang="en" suppressHydrationWarning>
+        <body className={roboto.className}>
           <ReduxProvider>
             <Header />
             {children}

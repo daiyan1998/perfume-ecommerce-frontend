@@ -1,17 +1,16 @@
 import { updateCart } from "@/utils/cartUtils";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState =
-  typeof window !== "undefined"
-    ? JSON.parse(localStorage.getItem("cart"))
-    : { cartItems: [] };
-
+const initialState = localStorage.getItem("cart")
+  ? JSON.parse(localStorage.getItem("cart"))
+  : { cartItems: [] };
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     addToCart: (state, action) => {
       const item = action.payload;
+      console.log(item);
 
       const existItem = state.cartItems?.find(
         (x) => x._id === item._id && x.ml === item.ml

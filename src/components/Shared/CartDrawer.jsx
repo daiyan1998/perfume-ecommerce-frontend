@@ -26,6 +26,7 @@ export default function CartDrawer() {
   });
 
   const { cartItems, itemsPrice } = useSelector((state) => state.cart);
+  console.log("cart", cartItems);
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
